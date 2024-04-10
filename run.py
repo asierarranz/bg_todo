@@ -1,44 +1,81 @@
 from PIL import Image, ImageDraw, ImageFont
-import os, ctypes
+import os, ctypes, time
+from pystray import Icon as icon, MenuItem as item, Menu as menu
+from PIL import Image as PILImage
 
-# Configuración
-imagen_fondo_path = 'bg.png'  # Ruta de la imagen de fondo
-texto_archivo_path = 'todo.txt'  # Ruta del archivo de texto
-fuente_path = 'C:\\Windows\\Fonts\\consola.ttf'  # Ruta de la fuente Consolas
-color_fuente = 'yellow'  # Color del texto
-tamanio_fuente = 14  # Tamaño de la fuente
+# Constants for paths and text style
+IMAGE_PATH = 'bg.png'
+TEXT_FILE_PATH = 'todo.txt'
+FONT_PATH = 'C:\\Windows\\Fonts\\consola.ttf'
+SAVED_IMAGE_PATH = 'bg2.png'
+ICON_PATH = 'bgicon.ico'
+FONT_SIZE = 14
+FONT_COLOR = 'yellow'
+START_X, START_Y = 1760, 10
+LINE_SPACING = 10
 
-# Cargar la imagen de fondo
-imagen = Image.open(imagen_fondo_path)
-draw = ImageDraw.Draw(imagen)
 
-# Cargar la fuente
-fuente = ImageFont.truetype(fuente_path, tamanio_fuente)
+# Global to store the last modification time
+last_mod_time = None
 
-# Leer el archivo de texto
-with open(texto_archivo_path, 'r') as archivo:
-    lineas = archivo.readlines()
+def check_for_changes():
+    global last_mod_time
+    current_mod_time = os.path.getmtime(TEXT_FILE_PATH)
+    if last_mod_time is None:
+        last_mod_time = current_mod_time
+        return False
+    if current_mod_time != last_mod_time:
+        last_mod_time = current_mod_time
+        return True
+    return False
 
-# Posición inicial del texto
-x = 1760
-y = 10
-line_spacing = 10  # Espaciado entre líneas
+def update_wallpaper():
+    image = PILImage.open(IMAGE_PATH)
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
+    
+    with open(TEXT_FILE_PATH, 'r') as file:
+        lines = file.readlines()
 
-# Escribir texto sobre la imagen
-for linea in lineas:
-    texto = linea.strip()
-    draw.text((x, y), texto, font=fuente, fill=color_fuente)
-    # Usar getbbox para obtener las dimensiones del texto
-    text_width, text_height = fuente.getbbox(texto)[2], fuente.getbbox(texto)[3]
-    y += text_height + line_spacing
+    y = START_Y
+    for line in lines:
+        text = line.strip()
+        draw.text((START_X, y), text, font=font, fill=FONT_COLOR)
+        _, text_height = font.getbbox(text)[2:4]
+        y += text_height + LINE_SPACING
 
-# Guardar la nueva imagen
-imagen_guardada_path = 'bg2.png'
-imagen_guardada_full_path = os.path.abspath(imagen_guardada_path)
-imagen.save(imagen_guardada_full_path)
+    full_path = os.path.abspath(SAVED_IMAGE_PATH)
+    image.save(full_path)
 
-# Cambiar el fondo de pantalla usando SystemParametersInfo
-SPI_SETDESKWALLPAPER = 20
-SPIF_UPDATEINIFILE = 0x1
-SPIF_SENDCHANGE = 0x2
-ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, imagen_guardada_full_path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE)
+    SPI_SETDESKWALLPAPER = 20
+    SPIF_UPDATEINIFILE = 1
+    SPIF_SENDCHANGE = 2
+    ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, full_path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE)
+
+def open_text_file():
+    os.startfile(TEXT_FILE_PATH)
+
+def on_quit(icon, item):
+    icon.stop()
+
+def setup(icon):
+    icon.visible = True
+
+if __name__ == "__main__":
+    icon_image = PILImage.open(ICON_PATH)
+    menu_items = menu(
+        item('Open Text File', open_text_file, default=True),
+        item('Update Wallpaper', update_wallpaper),
+        item('Quit', on_quit)
+    )
+
+    tray_icon = icon("WallpaperChanger", icon_image, "Wallpaper Changer", menu=menu_items)
+    tray_icon.run(setup)
+
+    try:
+        while True:
+            time.sleep(5)  # Check every 5 seconds for file change
+            if check_for_changes():
+                update_wallpaper()
+    except KeyboardInterrupt:
+        pass
