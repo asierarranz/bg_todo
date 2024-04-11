@@ -1,42 +1,48 @@
-# Dynamic Wallpaper Changer for Windows
+# ToDo List Background Integrator for Windows
 
-This project provides a Python script that dynamically updates the wallpaper on Windows systems based on the contents of a text file. It allows for displaying task lists, notes, or any text-based content directly on your desktop wallpaper.
+This project provides a Python script that integrates your ToDo list directly into your desktop wallpaper on Windows systems. It dynamically updates the wallpaper to display your current tasks, notes, or any text-based content that you wish to keep visible at all times.
+
+![ToDo List on Desktop Wallpaper](path/to/your/image.jpg)
 
 ## Features
 
-- **Dynamic Update**: Automatically changes the wallpaper by modifying the text in a `.txt` file.
-- **Customizable Text Appearance**: Customize the font, color, and size of the text displayed on the wallpaper.
-- **Automatic Refresh**: The wallpaper updates immediately when the text file changes, thanks to real-time monitoring.
-- **Multi-Monitor Support** (Pending): Planning to support different wallpapers on multiple monitors.
-- **System Tray Integration**: Runs from the system tray for easy access to wallpaper settings and controls.
-- **Robust Background Operation**: Utilizes a background scheduler to manage updates smoothly without affecting system performance.
+- **Dynamic ToDo List Update**: Automatically updates the wallpaper with the contents of a `.txt` file—your ToDo list.
+- **Customizable Text Appearance**: Customize the font, color, and size of the text displayed on your desktop.
+- **Automatic Refresh**: The wallpaper refreshes immediately when the ToDo list file changes, thanks to real-time monitoring.
+- **Multi-Monitor Support** (Pending): Plans to support different ToDo lists on multiple monitors.
+- **System Tray Integration**: Conveniently runs from the system tray for easy access to settings and controls.
+- **Robust Background Operation**: Utilizes a background scheduler to ensure that updates do not interrupt your workflow.
 
 ## Prerequisites
 
 Before you can use this script, make sure you have the following installed:
 
-- [Python](https://www.python.org/downloads/) (3.6 or higher) - Programming language required to run the script.
-- [Pillow](https://pillow.readthedocs.io/en/stable/installation.html) - Python Imaging Library (Fork), used for image manipulation.
-- [pywin32](https://pypi.org/project/pywin32/) - Python extensions for Windows.
-- [APScheduler](https://apscheduler.readthedocs.io/en/stable/) - Advanced Python Scheduler used for scheduling tasks.
+- [Python](https://www.python.org/downloads/) (3.6 or higher) - Required to run the script.
 
 ## Installation
 
-First, clone the repository or download the source code. Then, navigate to the script directory and install the required packages:
+First, clone the repository or download the source code:
 
 \```bash
-pip install Pillow pywin32 APScheduler
+git clone https://github.com/asierarranz/bg_todo.git
+cd yourrepository
+\```
+
+Then, install the necessary packages using the provided `requirements.txt`:
+
+\```bash
+pip install -r requirements.txt
 \```
 
 ## Configuration
 
-Before running the script, configure the paths and appearance settings in the script file:
+Configure the paths and appearance settings in the script file before running:
 
 - `IMAGE_PATH`: Path to the background image.
-- `TEXT_FILE_PATH`: Path to the text file that contains the text to display on the wallpaper.
-- `FONT_PATH`: Path to the `.ttf` file for the font used for text (e.g., `C:\\Windows\\Fonts\\consola.ttf`).
-- `FONT_SIZE`: Font size for the text.
-- `FONT_COLOR`: Color of the text (e.g., `"yellow"`).
+- `TEXT_FILE_PATH`: Path to the text file containing your ToDo list.
+- `FONT_PATH`: Path to the `.ttf` font file used for displaying the list (e.g., `C:\\Windows\\Fonts\\consola.ttf`).
+- `FONT_SIZE`: Font size of the list text.
+- `FONT_COLOR`: Color of the list text (e.g., `"yellow"`).
 
 ## Usage
 
@@ -44,19 +50,19 @@ To run the script:
 
 1. Open a command prompt or terminal.
 2. Navigate to the folder containing the script.
-3. Run the script using Python:
+3. Execute the script using Python:
 
 \```bash
 python run.py
 \```
 
-The script will minimize to the system tray. Right-click the tray icon to open the text file, update the wallpaper, or quit the application.
+The script will minimize to the system tray. Right-click the tray icon to open the ToDo list file, update the wallpaper, or quit the application.
 
 ## Building as an Executable
 
-To create a standalone executable that runs without a visible console:
+Create a standalone executable that runs without a visible console:
 
-1. Install PyInstaller:
+1. Install PyInstaller if not already installed:
 
 \```bash
 pip install pyinstaller
@@ -68,8 +74,8 @@ pip install pyinstaller
 pyinstaller --onefile --windowed --hidden-import='apscheduler.schedulers.background' --hidden-import='apscheduler.triggers.interval' --hidden-import='apscheduler.executors.default' run.py
 \```
 
-This will generate an executable in the `dist` folder that runs in the background without showing a console window.
+This will generate an executable in the `dist` folder that operates in the background.
 
 ## Logging
 
-The application logs its operations in `app.log`. Check this file if you encounter issues or need to troubleshoot.
+The application logs its operations in `app.log`. Check this file for troubleshooting or understanding application behavior.
