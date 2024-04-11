@@ -2,7 +2,7 @@
 
 This project provides a Python script that integrates your ToDo list directly into your desktop wallpaper on Windows systems. It dynamically updates the wallpaper to display your current tasks, notes, or any text-based content that you wish to keep visible at all times.
 
-![ToDo List on Desktop Wallpaper](path/to/your/image.jpg)
+![ToDo List on Desktop Wallpaper](sample.png)
 
 ## Features
 
